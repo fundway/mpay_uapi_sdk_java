@@ -1,0 +1,19 @@
+# IntelliJ IDEA
+/.idea/
+*.iml
+
+# Gradle
+/.gradle/
+/build/
+
+# Maven
+/build/
+target
+
+# AI
+/.claude/
+/.codex/
+
+# Other
+/logs/
+/out/
