@@ -2,6 +2,7 @@ package cards.mpay.uapi.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import cards.mpay.uapi.http.BaseHttpClient;
+import cards.mpay.uapi.api.args.wallet.*;
 import cards.mpay.uapi.model.Page;
 import cards.mpay.uapi.model.wallet.Chain;
 import cards.mpay.uapi.model.wallet.DepositAddress;
@@ -39,20 +40,20 @@ public class WalletApi {
      *
      * <p>GET /v1/wallet/transactions</p>
      *
-     * @param direction {@code "in"} or {@code "out"}. Pass {@code null} to return both directions.
-     * @param page      page number, starting from 1
-     * @param limit     number of records to return per page
+     * @param args query arguments
      */
-    public Page<WalletTransaction> getWalletTransactions(String direction, Integer page, Integer limit) {
+    public Page<WalletTransaction> getWalletTransactions(GetWalletTransactionsArgs args) {
         Map<String, Object> params = new LinkedHashMap<>();
-        if (direction != null) {
-            params.put("direction", direction);
-        }
-        if (page != null) {
-            params.put("page", page);
-        }
-        if (limit != null) {
-            params.put("limit", limit);
+        if (args != null) {
+            if (args.getDirection() != null) {
+                params.put("direction", args.getDirection());
+            }
+            if (args.getPage() != null) {
+                params.put("page", args.getPage());
+            }
+            if (args.getLimit() != null) {
+                params.put("limit", args.getLimit());
+            }
         }
         return http.get("/v1/wallet/transactions", params, new TypeReference<Page<WalletTransaction>>() {
         });
@@ -66,7 +67,7 @@ public class WalletApi {
      * @param direction {@code "in"} or {@code "out"}. Pass {@code null} to return both directions.
      */
     public Page<WalletTransaction> getWalletTransactions(String direction) {
-        return getWalletTransactions(direction, null, null);
+        return getWalletTransactions(GetWalletTransactionsArgs.builder().direction(direction).build());
     }
 
     /**
@@ -75,7 +76,7 @@ public class WalletApi {
      * <p>GET /v1/wallet/transactions</p>
      */
     public Page<WalletTransaction> getWalletTransactions() {
-        return getWalletTransactions(null, null, null);
+        return getWalletTransactions(GetWalletTransactionsArgs.builder().build());
     }
 
     /**
@@ -134,21 +135,21 @@ public class WalletApi {
      *
      * <p>GET /v1/deposit/transactions</p>
      *
-     * @param chainId blockchain network chain ID. Pass {@code null} to include all networks.
-     * @param page    page number, starting from 1
-     * @param limit   number of records to return per page
+     * @param args query arguments
      * @return paginated deposit transaction records
      */
-    public Page<DepositTransaction> getDepositTransactions(Long chainId, Integer page, Integer limit) {
+    public Page<DepositTransaction> getDepositTransactions(GetDepositTransactionsArgs args) {
         Map<String, Object> params = new LinkedHashMap<>();
-        if (chainId != null) {
-            params.put("chain_id", chainId);
-        }
-        if (page != null) {
-            params.put("page", page);
-        }
-        if (limit != null) {
-            params.put("limit", limit);
+        if (args != null) {
+            if (args.getChainId() != null) {
+                params.put("chain_id", args.getChainId());
+            }
+            if (args.getPage() != null) {
+                params.put("page", args.getPage());
+            }
+            if (args.getLimit() != null) {
+                params.put("limit", args.getLimit());
+            }
         }
         return http.get("/v1/deposit/transactions", params, new TypeReference<Page<DepositTransaction>>() {
         });
@@ -163,7 +164,7 @@ public class WalletApi {
      * @return paginated deposit transaction records
      */
     public Page<DepositTransaction> getDepositTransactions(Long chainId) {
-        return getDepositTransactions(chainId, null, null);
+        return getDepositTransactions(GetDepositTransactionsArgs.builder().chainId(chainId).build());
     }
 
     /**
@@ -174,6 +175,6 @@ public class WalletApi {
      * @return paginated deposit transaction records
      */
     public Page<DepositTransaction> getDepositTransactions() {
-        return getDepositTransactions(null, null, null);
+        return getDepositTransactions(GetDepositTransactionsArgs.builder().build());
     }
 }

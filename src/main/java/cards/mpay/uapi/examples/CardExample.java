@@ -2,6 +2,7 @@ package cards.mpay.uapi.examples;
 
 import cards.mpay.uapi.MpayUapiClient;
 import cards.mpay.uapi.exception.MpayApiException;
+import cards.mpay.uapi.api.args.card.*;
 import cards.mpay.uapi.model.Page;
 import cards.mpay.uapi.model.card.CardInfo;
 import cards.mpay.uapi.model.card.CardOperation;
@@ -66,7 +67,10 @@ public final class CardExample {
     /** Retrieves the list of cards. */
     public static List<CardInfo> getCards() {
         try {
-            List<CardInfo> cards = newClient().card().getCards(null);
+            GetCardsArgs args = GetCardsArgs.builder()
+                    .status("ACTIVE")
+                    .build();
+            List<CardInfo> cards = newClient().card().getCards(args);
             System.out.println(">>>>> Cards:\n" + cards);
             return cards;
         } catch (MpayApiException e) {
@@ -104,7 +108,12 @@ public final class CardExample {
      */
     public static void getCardTransactions(String cardId) {
         try {
-            Page<CardTransaction> transactions = newClient().card().getCardTransactions(cardId, 1, 20);
+            GetCardTransactionsArgs args = GetCardTransactionsArgs.builder()
+                    .cardId(cardId)
+                    .page(1)
+                    .limit(20)
+                    .build();
+            Page<CardTransaction> transactions = newClient().card().getCardTransactions(args);
             System.out.println(">>>>> Card transactions:\n" + transactions);
         } catch (MpayApiException e) {
             System.out.println("getCardTransactions error: " + e);

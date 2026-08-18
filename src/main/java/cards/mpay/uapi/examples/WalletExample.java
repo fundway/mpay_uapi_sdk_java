@@ -2,6 +2,7 @@ package cards.mpay.uapi.examples;
 
 import cards.mpay.uapi.MpayUapiClient;
 import cards.mpay.uapi.exception.MpayApiException;
+import cards.mpay.uapi.api.args.wallet.*;
 import cards.mpay.uapi.model.Page;
 import cards.mpay.uapi.model.wallet.Chain;
 import cards.mpay.uapi.model.wallet.DepositAddress;
@@ -53,7 +54,11 @@ public final class WalletExample {
     /** Gets the user's wallet transaction records. */
     public static void getWalletTransactions() {
         try {
-            Page<WalletTransaction> transactions = newClient().wallet().getWalletTransactions(null, 1, 20);
+            GetWalletTransactionsArgs args = GetWalletTransactionsArgs.builder()
+                    .page(1)
+                    .limit(20)
+                    .build();
+            Page<WalletTransaction> transactions = newClient().wallet().getWalletTransactions(args);
             System.out.println(">>>>> Wallet transactions:\n" + transactions);
         } catch (MpayApiException e) {
             System.out.println("getWalletTransactions error: " + e);
@@ -93,7 +98,12 @@ public final class WalletExample {
     /** Gets the user's deposit transaction records. */
     public static void getDepositTransactions() {
         try {
-            Page<DepositTransaction> transactions = newClient().wallet().getDepositTransactions(null, 1, 20);
+            GetDepositTransactionsArgs args = GetDepositTransactionsArgs.builder()
+                    .chainId(1L)
+                    .page(1)
+                    .limit(20)
+                    .build();
+            Page<DepositTransaction> transactions = newClient().wallet().getDepositTransactions(args);
             System.out.println(">>>>> Deposit transactions:\n" + transactions);
         } catch (MpayApiException e) {
             System.out.println("getDepositTransactions error: " + e);

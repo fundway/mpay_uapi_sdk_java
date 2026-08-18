@@ -2,6 +2,7 @@ package cards.mpay.uapi.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import cards.mpay.uapi.http.BaseHttpClient;
+import cards.mpay.uapi.api.args.card.*;
 import cards.mpay.uapi.model.Page;
 import cards.mpay.uapi.model.card.CardInfo;
 import cards.mpay.uapi.model.card.CardOperation;
@@ -50,11 +51,11 @@ public class CardApi {
      *
      * <p>GET /v1/card/list</p>
      *
-     * @param status filter cards by status; see {@link #getStatuses()}. Pass {@code null} for no filter.
+     * @param args card query arguments
      */
-    public List<CardInfo> getCards(String status) {
+    public List<CardInfo> getCards(GetCardsArgs args) {
         Map<String, Object> params = new LinkedHashMap<>();
-        params.put("status", status);
+        params.put("status", args == null ? null : args.getStatus());
         return http.get("/v1/card/list", params, new TypeReference<>() {
         });
     }
@@ -65,7 +66,7 @@ public class CardApi {
      * <p>GET /v1/card/list</p>
      */
     public List<CardInfo> getCards() {
-        return getCards(null);
+        return getCards(GetCardsArgs.builder().build());
     }
 
     /**
@@ -103,16 +104,22 @@ public class CardApi {
      *
      * <p>GET /v1/card/transactions</p>
      *
-     * @param cardId unique identifier of the card, required
-     * @param page   page number, starting from 1
-     * @param limit  number of records to return per page
+     * @param args card transactions query arguments
      */
-    public Page<CardTransaction> getCardTransactions(String cardId, Integer page, Integer limit) {
+    public Page<CardTransaction> getCardTransactions(GetCardTransactionsArgs args) {
         Map<String, Object> params = new LinkedHashMap<>();
-        params.put("card_id", cardId);
-        params.put("page", page == null ? 1 : page);
-        params.put("limit", limit == null ? 20 : limit);
-        return http.get("/v1/card/transactions", params, new TypeReference<>() {
+        if (args != null) {
+            if (args.getCardId() != null) {
+                params.put("card_id", args.getCardId());
+            }
+            if (args.getPage() != null) {
+                params.put("page", args.getPage());
+            }
+            if (args.getLimit() != null) {
+                params.put("limit", args.getLimit());
+            }
+        }
+        return http.get("/v1/card/transactions", params, new TypeReference<Page<CardTransaction>>() {
         });
     }
 
@@ -124,10 +131,7 @@ public class CardApi {
      * @param cardId unique identifier of the card, required
      */
     public Page<CardTransaction> getCardTransactions(String cardId) {
-        Map<String, Object> params = new LinkedHashMap<>();
-        params.put("card_id", cardId);
-        return http.get("/v1/card/transactions", params, new TypeReference<>() {
-        });
+        return getCardTransactions(GetCardTransactionsArgs.builder().cardId(cardId).build());
     }
 
     /**
