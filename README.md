@@ -32,7 +32,7 @@ MpayUapiClient client = MpayUapiClient.builder()
 
 WalletBalance balance = client.wallet().getWalletBalance();
 HolderInfo holder = client.holder().getHolderInfo();
-List<CardInfo> cards = client.card().getCards(null);
+List<CardInfo> cards = client.card().getCards();
 ```
 
 Optional builder settings:
@@ -65,11 +65,29 @@ MpayUapiClient client = MpayUapiClient.builder()
 | Method | Endpoint |
 | --- | --- |
 | `getWalletBalance()` | `GET /v1/wallet/balance` |
-| `getWalletTransactions(direction, page, limit)` | `GET /v1/wallet/transactions` |
+| `getWalletTransactions(GetWalletTransactionsArgs args)` | `GET /v1/wallet/transactions` |
 | `getDepositChains()` | `GET /v1/deposit/chains` |
 | `getDepositOptions(groupBy)` | `GET /v1/deposit/options` |
 | `getDepositAddress(chainId)` | `GET /v1/deposit/address` |
-| `getDepositTransactions(chainId, page, limit)` | `GET /v1/deposit/transactions` |
+| `getDepositTransactions(GetDepositTransactionsArgs args)` | `GET /v1/deposit/transactions` |
+
+Filtering and pagination options are passed with argument objects:
+
+```java
+Page<WalletTransaction> walletTransactions = client.wallet().getWalletTransactions(
+        GetWalletTransactionsArgs.builder()
+                .direction("in")
+                .page(1)
+                .limit(20)
+                .build());
+
+Page<DepositTransaction> depositTransactions = client.wallet().getDepositTransactions(
+        GetDepositTransactionsArgs.builder()
+                .chainId(1L)
+                .page(1)
+                .limit(20)
+                .build());
+```
 
 ### Holder -- `client.holder()`
 
@@ -84,14 +102,36 @@ MpayUapiClient client = MpayUapiClient.builder()
 | --- | --- |
 | `getProducts()` | `GET /v1/card/products` |
 | `getStatuses()` | `GET /v1/card/statuses` |
-| `getCards(status)` | `GET /v1/card/list` |
+| `getCards(GetCardsArgs args)` | `GET /v1/card/list` |
 | `getCardInfo(cardId)` | `GET /v1/card/info` |
 | `getCardSensitive(cardId)` | `GET /v1/card/sensitive` |
-| `getCardTransactions(cardId, page, limit)` | `GET /v1/card/transactions` |
+| `getCardTransactions(GetCardTransactionsArgs args)` | `GET /v1/card/transactions` |
 | `remarkCard(cardId, remark)` | `POST /v1/card/remark` |
 | `createCard(productId)` | `POST /v1/card/create` |
 | `rechargeCard(cardId, amount)` | `POST /v1/card/recharge` |
 | `getCardOperationStatus(operationId)` | `GET /v1/card/operation/status` |
+
+Filtering and pagination options are passed with argument objects:
+
+```java
+List<CardInfo> activeCards = client.card().getCards(
+        GetCardsArgs.builder()
+                .status("ACTIVE")
+                .build());
+
+Page<CardTransaction> cardTransactions = client.card().getCardTransactions(
+        GetCardTransactionsArgs.builder()
+                .cardId("card_xxx")
+                .page(1)
+                .limit(20)
+                .build());
+```
+
+For unfiltered queries, use `getWalletTransactions()`,
+`getDepositTransactions()`, or `getCards()`. The convenience overloads
+`getWalletTransactions(direction)`, `getDepositTransactions(chainId)`, and
+`getCardTransactions(cardId)` are also available when pagination options are
+not needed.
 
 `createCard` and `rechargeCard` are asynchronous: they return immediately
 with `status == "PROCESSING"`. Use `MpayUapiClient.waitForCardOperation`

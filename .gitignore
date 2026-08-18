@@ -7,7 +7,7 @@
 /build/
 
 # Maven
-/build/
+/.m2/
 target
 
 # AI
